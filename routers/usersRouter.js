@@ -9,5 +9,5 @@ const usersController = require("../controllers/usersController");
 // );
 
 module.exports = router
-  .get("/users", usersController.getUsers)
-  .post("/new-user", usersController.createUser);
+  .post("/new-user", usersController.createUser)
+  .get("/users", usersController.getUsers);
