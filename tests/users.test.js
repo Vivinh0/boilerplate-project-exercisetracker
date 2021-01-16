@@ -1,7 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
-const userModel = require("../models/userModel");
+const userModel = require("../models/usersModel");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const expect = chai.expect;
@@ -45,5 +45,29 @@ describe("Test URL Exercise Tracker Microservice", () => {
     });
   });
 
-  describe('GET /api/exercise/users')
+  describe("GET /api/exercise/users", () => {
+    it("should return an array. Each element in the array is an object containing a user's username and _id.", (done) => {
+      // Mock data. Insert 5 users
+      for (let i = 0; i < 5; i++) {
+        chai
+          .request(server)
+          .post("/api/exercise/new-user")
+          .send({ username: `Test User ${i}` });
+      }
+      // Test
+      chai
+        .request(server)
+        .get("/api/exercise/users")
+        .end((err, res) => {
+          // Get results
+          const actualResult = res.body;
+
+          // Test results
+          expect(actualResult).to.be.an("array");
+          expect(actualResult[0]).to.has.all.keys("_id", "username");
+
+          done();
+        });
+    });
+  });
 });
