@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/userController");
+const userController = require("../controllers/usersController");
 
 // module.exports = router.post("/new-user", (req, res, next) =>
 //   res.json({ msg: "Ok" })

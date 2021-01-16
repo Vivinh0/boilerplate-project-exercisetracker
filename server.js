@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended:false}));
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
-app.use("/api/exercise", require("./routers/userRouter"));
+app.use("/api/exercise", require("./routers/usersRouter"));
 
 // Start server
 const listener = app.listen(process.env.PORT || 3000, () => {

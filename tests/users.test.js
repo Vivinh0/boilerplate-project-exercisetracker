@@ -44,4 +44,6 @@ describe("Test URL Exercise Tracker Microservice", () => {
         });
     });
   });
+
+  describe('GET /api/exercise/users')
 });
