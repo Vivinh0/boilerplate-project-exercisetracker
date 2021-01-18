@@ -11,6 +11,7 @@ mongoose.connect(DB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
+  useFindAndModify: false,
 });
 // Get connection instance
 const db = mongoose.connection;
