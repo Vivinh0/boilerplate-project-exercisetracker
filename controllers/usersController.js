@@ -31,4 +31,31 @@ module.exports = {
       res.sendStatus(500);
     }
   },
+  addExercise: async (req, res, next) => {
+    try {
+      // Get user to add exercise
+      const idUserToFind = req.body.userId;
+      const filter = { _id: idUserToFind };
+
+      // Find and pdate
+      const { description, duration, date } = req.body;
+      const newExercise = {
+        description: description,
+        duration: duration,
+        date: date || new Date().toISOString().split("T")[0],
+      };
+      const updatedUser = await usersModel.findByIdAndUpdate(
+        filter,
+        {
+          $push: { log: newExercise },
+        },
+        { new: true, fields: { _id: 1, username: 1, log: 1 } }
+      );
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
+    }
+  },
 };

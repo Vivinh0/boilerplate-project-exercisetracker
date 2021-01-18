@@ -10,4 +10,5 @@ const usersController = require("../controllers/usersController");
 
 module.exports = router
   .post("/new-user", usersController.createUser)
-  .get("/users", usersController.getUsers);
+  .get("/users", usersController.getUsers)
+  .post("/add", usersController.addExercise);
