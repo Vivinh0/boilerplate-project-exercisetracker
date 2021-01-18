@@ -151,4 +151,31 @@ describe("Test URL Exercise Tracker Microservice", () => {
         });
     });
   });
+
+  describe("GET /api/exercise/log", () => {
+    it("should return the user object with a log array of all the exercise added. Each log item has the 'description', 'duration' and 'date' properties", (done) => {
+      // Test
+      chai
+        .request(server)
+        .get(`/api/exercise/log/${testUserId}`)
+        .end((err, res) => {
+          // Get results
+          const actualResult = res.body;
+          // console.log(actualResult);
+          // Test results
+          // test response
+          expect(actualResult).to.has.all.keys("_id", "username", "log");
+          // test log property is array
+          expect(actualResult.log).to.be.an("array");
+          // test array element properties
+          expect(actualResult.log[0]).to.has.all.keys(
+            "description",
+            "duration",
+            "date"
+          );
+
+          done();
+        });
+    });
+  });
 });
