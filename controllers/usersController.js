@@ -68,7 +68,13 @@ module.exports = {
         userIdToFind,
         "_id username log"
       );
-      res.json(foundUser);
+      const response = {
+        _id: foundUser._id,
+        username: foundUser.username,
+        count: foundUser.log.length,
+        log: foundUser.log,
+      };
+      res.json(response);
     } catch (error) {
       console.log(error);
       res.sendStatus(500);
