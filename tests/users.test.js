@@ -164,7 +164,12 @@ describe("Test URL Exercise Tracker Microservice", () => {
           // console.log(actualResult);
           // Test results
           // test response
-          expect(actualResult).to.has.all.keys("_id", "username", "log");
+          expect(actualResult).to.has.all.keys(
+            "_id",
+            "username",
+            "log",
+            "count"
+          );
           // test log property is array
           expect(actualResult.log).to.be.an("array");
           // test array element properties
@@ -173,6 +178,10 @@ describe("Test URL Exercise Tracker Microservice", () => {
             "duration",
             "date"
           );
+          // test count property
+          expect(actualResult.count)
+            .to.be.an("number")
+            .and.be.equal(actualResult.log.length);
 
           done();
         });
