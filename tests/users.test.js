@@ -1,7 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
-const userModel = require("../models/usersModel");
+const usersModel = require("../models/usersModel");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const expect = chai.expect;
@@ -9,6 +9,7 @@ chai.use(chaiHttp);
 
 describe("Test URL Exercise Tracker Microservice", () => {
   let server;
+  let testUserId;
 
   // Start server before each test
   beforeEach((done) => {
@@ -19,7 +20,7 @@ describe("Test URL Exercise Tracker Microservice", () => {
   afterEach((done) => server.close(() => done()));
   // Clean user collection and close connection with MongoDB
   after(async () => {
-    await userModel.deleteMany();
+    await usersModel.deleteMany();
     await mongoose.disconnect();
   });
 
@@ -39,6 +40,8 @@ describe("Test URL Exercise Tracker Microservice", () => {
             .that.has.all.keys("_id", "username");
 
           expect(actualResult.username).to.be.equal("John Doe");
+
+          testUserId = actualResult._id;
 
           done();
         });
@@ -65,6 +68,84 @@ describe("Test URL Exercise Tracker Microservice", () => {
           // Test results
           expect(actualResult).to.be.an("array");
           expect(actualResult[0]).to.has.all.keys("_id", "username");
+
+          done();
+        });
+    });
+  });
+
+  describe("POST /api/exercise/add", () => {
+    it("should POST to /api/exercise/add with form data userId=_id, description, duration, and optionally date. If no date is supplied, the current date will be used. The response returned will be the user object with the property 'logs', wich is an array of object with input keys (description, duration, date)", (done) => {
+      // Mock inut data
+      const exercise = {
+        userId: testUserId,
+        description: "exercise 1",
+        duration: 15 * 60, // min * seconds
+        date: "2010-10-10",
+      };
+
+      // Test
+      chai
+        .request(server)
+        .post("/api/exercise/add")
+        .send(exercise)
+        .end((err, res) => {
+          // Get results
+          const actualResult = res.body;
+
+          // Test results //
+          // test response properties
+          expect(actualResult)
+            .to.be.an("object")
+            .that.has.all.keys("_id", "username", "log");
+          // test response values
+          // expect(actualResult._id).to.be.equal(foundUserId);
+          expect(actualResult.username).to.be.equal("John Doe");
+          expect(actualResult.log).to.be.an("array");
+          // test properties element log array
+          expect(actualResult.log[0]).to.has.all.keys(
+            "description",
+            "duration",
+            "date"
+          );
+
+          done();
+        });
+    });
+    it("should return same object previous test but with current date", (done) => {
+      // Mock input data. No date
+      const exerciseNoDate = {
+        userId: testUserId,
+        description: "exercise 2",
+        duration: 10 * 60, // min * seconds
+      };
+      // Test
+      chai
+        .request(server)
+        .post("/api/exercise/add")
+        .send(exerciseNoDate)
+        .end((err, res) => {
+          // Get results
+          const actualResult = res.body;
+
+          // Test results //
+          // test response properties
+          expect(actualResult)
+            .to.be.an("object")
+            .that.has.all.keys("_id", "username", "log");
+          // test response values
+          expect(actualResult.username).to.be.equal("John Doe");
+          expect(actualResult.log).to.be.an("array");
+          // test properties element log array
+          expect(actualResult.log[1]).to.has.all.keys(
+            "description",
+            "duration",
+            "date"
+          );
+          // test is set current date
+          const actualResultDate = actualResult.log[1].date.split("T")[0];
+          const currDate = new Date().toISOString().split("T")[0];
+          expect(actualResultDate).to.be.equal(currDate);
 
           done();
         });
