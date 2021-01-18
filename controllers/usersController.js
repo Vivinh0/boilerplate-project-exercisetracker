@@ -51,8 +51,24 @@ module.exports = {
         },
         { new: true, fields: { _id: 1, username: 1, log: 1 } }
       );
-
-      res.json(updatedUser);
+      if (updatedUser) {
+        res.json(updatedUser);
+      } else {
+        res.status(400).send({ msg: "user id not found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(500);
+    }
+  },
+  getLogs: async (req, res, next) => {
+    try {
+      const userIdToFind = req.params.userId;
+      const foundUser = await usersModel.findById(
+        userIdToFind,
+        "_id username log"
+      );
+      res.json(foundUser);
     } catch (error) {
       console.log(error);
       res.sendStatus(500);
