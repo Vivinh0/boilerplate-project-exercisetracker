@@ -186,5 +186,46 @@ describe("Test URL Exercise Tracker Microservice", () => {
           done();
         });
     });
+
+    it("it should filter using query parameters 'from', 'to' and 'limit' and return an array of logs with dates between '2011-12-12' and '2015-12-12' and be limited to two elements", (done) => {
+      let arrLog = [];
+      for (let i = 0; i < 5; i++) {
+        const log = {
+          description: `Description 201${i}`,
+          duration: 10 * i * 60,
+          date: `201${i}-12-12`,
+        };
+        arrLog.push(log);
+      }
+      (async () => {
+        await usersModel.updateOne(
+          { _id: testUserId },
+          { $push: { log: arrLog } }
+        );
+      })();
+
+      // Test
+      chai
+        .request(server)
+        .get(
+          `/api/exercise/log/${testUserId}?from=2011-12-12&to=2015-12-12&limit=2`
+        )
+        .end((err, res) => {
+          // Get results
+          const actualResult = res.body;
+          // console.log(actualResult);
+          // Test results
+          // test count property
+          expect(actualResult.log).to.be.an("array").and.have.length(2);
+          expect(actualResult.log[0].date.split("T")[0]).to.be.equal(
+            "2011-12-12"
+          );
+          expect(actualResult.log[1].date.split("T")[0]).to.be.equal(
+            "2012-12-12"
+          );
+
+          done();
+        });
+    });
   });
 });
