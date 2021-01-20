@@ -97,17 +97,13 @@ describe("Test URL Exercise Tracker Microservice", () => {
           // test response properties
           expect(actualResult)
             .to.be.an("object")
-            .that.has.all.keys("_id", "username", "log");
-          // test response values
-          // expect(actualResult._id).to.be.equal(foundUserId);
-          expect(actualResult.username).to.be.equal("John Doe");
-          expect(actualResult.log).to.be.an("array");
-          // test properties element log array
-          expect(actualResult.log[0]).to.has.all.keys(
-            "description",
-            "duration",
-            "date"
-          );
+            .that.has.all.keys(
+              "_id",
+              "username",
+              "description",
+              "duration",
+              "date"
+            );
 
           done();
         });
@@ -132,20 +128,19 @@ describe("Test URL Exercise Tracker Microservice", () => {
           // test response properties
           expect(actualResult)
             .to.be.an("object")
-            .that.has.all.keys("_id", "username", "log");
-          // test response values
-          expect(actualResult.username).to.be.equal("John Doe");
-          expect(actualResult.log).to.be.an("array");
-          // test properties element log array
-          expect(actualResult.log[1]).to.has.all.keys(
-            "description",
-            "duration",
-            "date"
-          );
+            .that.has.all.keys(
+              "_id",
+              "username",
+              "description",
+              "duration",
+              "date"
+            );
           // test is set current date
-          const actualResultDate = actualResult.log[1].date.split("T")[0];
-          const currDate = new Date().toISOString().split("T")[0];
-          expect(actualResultDate).to.be.equal(currDate);
+          const actualResultDate = new Date(actualResult.date);
+          const currDate = new Date().toString().slice(0, 15);
+          expect(actualResultDate.toString().slice(0, 15)).to.be.equal(
+            currDate
+          );
 
           done();
         });
