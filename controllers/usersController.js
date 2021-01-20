@@ -52,7 +52,20 @@ module.exports = {
         { new: true, fields: { _id: 1, username: 1, log: 1 } }
       );
       if (updatedUser) {
-        res.json(updatedUser);
+        const posLastLog = updatedUser.log.length - 1;
+
+        // Format date
+        const dateToFormat = new Date(updatedUser.log[posLastLog].date);
+
+        // Create expected response
+        const response = {
+          _id: updatedUser._id,
+          username: updatedUser.username,
+          description: updatedUser.log[posLastLog].description,
+          duration: updatedUser.log[posLastLog].duration,
+          date: dateToFormat.toString().slice(0,15),
+        };
+        res.json(response);
       } else {
         res.status(400).send({ msg: "user id not found" });
       }
@@ -75,7 +88,7 @@ module.exports = {
       const limitNum = limit ? Number.parseInt(req.query.limit) : null;
 
       let filterLogs;
-      // Return function with right condition 
+      // Return function with right condition
       const conditionSelector = () => {
         if (fromDate && toDate)
           return (date) => {
