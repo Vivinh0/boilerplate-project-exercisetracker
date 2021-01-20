@@ -64,15 +64,58 @@ module.exports = {
   getLogs: async (req, res, next) => {
     try {
       const userIdToFind = req.params.userId;
-      const foundUser = await usersModel.findById(
-        userIdToFind,
-        "_id username log"
-      );
+      const foundUser = await usersModel.findById(userIdToFind, {
+        username: 1,
+        log: 1,
+      });
+      // Filter response
+      const { from, to, limit } = req.query;
+      const fromDate = from ? new Date(from) : null;
+      const toDate = to ? new Date(to) : null;
+      const limitNum = limit ? Number.parseInt(req.query.limit) : null;
+
+      let filterLogs;
+      // Return function with right condition 
+      const conditionSelector = () => {
+        if (fromDate && toDate)
+          return (date) => {
+            return fromDate <= date && date <= toDate;
+          };
+        else if (fromDate && !toDate)
+          return (date) => {
+            return fromDate <= date;
+          };
+        else if (!fromDate && toDate)
+          return (date) => {
+            return date <= toDate;
+          };
+        else 0;
+      };
+
+      // Filter logs using right condition
+      if (fromDate || toDate) {
+        filterLogs = foundUser.log.filter((logElem) => {
+          const date = new Date(logElem.date);
+          const condition = conditionSelector();
+          if (condition(date)) return date;
+          return;
+        });
+      }
+
+      // Limited logs
+      let limitedLogs;
+      if (limitNum) {
+        limitedLogs = filterLogs
+          ? filterLogs.slice(0, limitNum)
+          : foundUser.log.slice(0, limitNum);
+      }
+
+      // Create response
       const response = {
         _id: foundUser._id,
         username: foundUser.username,
         count: foundUser.log.length,
-        log: foundUser.log,
+        log: limitedLogs || filterLogs || foundUser.log,
       };
       res.json(response);
     } catch (error) {
