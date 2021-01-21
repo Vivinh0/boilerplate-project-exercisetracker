@@ -152,7 +152,7 @@ describe("Test URL Exercise Tracker Microservice", () => {
       // Test
       chai
         .request(server)
-        .get(`/api/exercise/log/${testUserId}`)
+        .get(`/api/exercise/log?userId=${testUserId}`)
         .end((err, res) => {
           // Get results
           const actualResult = res.body;
@@ -203,7 +203,7 @@ describe("Test URL Exercise Tracker Microservice", () => {
       chai
         .request(server)
         .get(
-          `/api/exercise/log/${testUserId}?from=2011-12-12&to=2015-12-12&limit=2`
+          `/api/exercise/log?userId=${testUserId}&from=2011-12-12&to=2015-12-12&limit=2`
         )
         .end((err, res) => {
           // Get results
