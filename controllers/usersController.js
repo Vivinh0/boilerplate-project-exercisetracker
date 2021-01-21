@@ -76,7 +76,7 @@ module.exports = {
   },
   getLogs: async (req, res, next) => {
     try {
-      const userIdToFind = req.params.userId;
+      const userIdToFind = req.query.userId;
       const foundUser = await usersModel.findById(userIdToFind, {
         username: 1,
         log: 1,
